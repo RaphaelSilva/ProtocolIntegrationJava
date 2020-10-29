@@ -22,7 +22,7 @@ public class Server implements IServer, Runnable {
 
     public void init() {
         this.ThreadControl = true;
-        this.thread = new Thread(this, "Thread.Main.Server");
+        this.thread = new Thread("Thread.App.Server");
         this.thread.start();
     }
 
@@ -47,6 +47,7 @@ public class Server implements IServer, Runnable {
     public void run() {
         try {
             this.server = new ServerSocket(this.port);
+            this.writeLog();
             while (ThreadControl) {
                 ThreadRunning = true;
                 var client = this.server.accept();
@@ -73,7 +74,8 @@ public class Server implements IServer, Runnable {
     }
 
     public void writeLog() {
-        LogFile.getInstance().log("Server at {0}:{1}", this.server.getInetAddress(), this.server.getLocalPort());
+        LogFile.getInstance().log("ServerSocket on %d", this.port);
+        LogFile.getInstance().log("Server at %s:%s", this.server.getInetAddress(), this.server.getLocalPort());
         LogFile.getInstance().log(this.toString());
     }
 }

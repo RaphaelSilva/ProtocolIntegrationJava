@@ -4,7 +4,7 @@ public class LogFile {
     private static LogFile logFile;
 
     public static LogFile getInstance(){
-        if(logFile != null){
+        if(logFile == null){
             logFile = new LogFile();
         }
         return logFile;

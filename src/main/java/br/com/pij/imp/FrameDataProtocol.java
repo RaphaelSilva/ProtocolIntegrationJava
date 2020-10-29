@@ -12,6 +12,6 @@ public class FrameDataProtocol extends ServerProtocol {
 
     @Override
     public void Decode(byte b) {
-        LogFile.getInstance().log("Receive a byte {0}", b);
+        LogFile.getInstance().log("Receive a byte %h", b);
     }
 }
