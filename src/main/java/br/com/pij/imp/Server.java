@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
 
 public class Server implements IServer, Runnable {
     private ServerSocket server;
@@ -22,12 +23,13 @@ public class Server implements IServer, Runnable {
 
     public void init() {
         this.ThreadControl = true;
-        this.thread = new Thread("Thread.App.Server");
+        this.thread = new Thread(this, "Thread.App.Server");
         this.thread.start();
     }
 
     public void StopServer() {
         this.ThreadControl = false;
+        // this.thread.interrupt();
         var thGroup = this.thread.getThreadGroup();
         Thread [] all = new Thread[thGroup.activeCount()];
         thGroup.enumerate(all, true);
@@ -45,17 +47,19 @@ public class Server implements IServer, Runnable {
 
     @Override
     public void run() {
+        var pool = Executors.newFixedThreadPool(5);
         try {
             this.server = new ServerSocket(this.port);
-            this.writeLog();
-            while (ThreadControl) {
-                ThreadRunning = true;
+            LogFile.getInstance().log("Server::ServerSocket on %d", this.port);
+            LogFile.getInstance().log("Server::Server at %s:%s", this.server.getInetAddress(), this.server.getLocalPort());
+            LogFile.getInstance().log("Server::%s", this.toString());
+            while (this.ThreadControl) {
+                this.ThreadRunning = true;
                 var client = this.server.accept();
-                var protocol = ServerProtocol.factory(client);
-                Thread th = new Thread(this.thread.getThreadGroup(), protocol);
-                th.start();
+                pool.execute(ServerProtocol.factory(client));
             }
             this.server.close();
+            this.ThreadRunning = false;
         } catch (IOException e) {
             LogFile.getInstance().log(e);
         }
@@ -71,11 +75,5 @@ public class Server implements IServer, Runnable {
 
     public boolean isThreadRunning() {
         return ThreadRunning;
-    }
-
-    public void writeLog() {
-        LogFile.getInstance().log("ServerSocket on %d", this.port);
-        LogFile.getInstance().log("Server at %s:%s", this.server.getInetAddress(), this.server.getLocalPort());
-        LogFile.getInstance().log(this.toString());
     }
 }
