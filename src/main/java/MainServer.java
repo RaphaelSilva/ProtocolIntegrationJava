@@ -4,6 +4,7 @@ import br.com.pij.imp.LogFile;
 import br.com.pij.imp.Server;
 
 import java.io.IOException;
+import java.util.logging.Level;
 
 public class MainServer {
 
@@ -12,6 +13,8 @@ public class MainServer {
     }
 
     public static void main(String [] args){
+        LogFile.makeInstance(MainServer.class.getName());
+        LogFile.setLevel(Level.ALL);
         var server = new Server(getPort());
         server.init();
     }

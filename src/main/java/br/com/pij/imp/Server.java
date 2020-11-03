@@ -1,13 +1,12 @@
 package br.com.pij.imp;
 
-import br.com.pij.IServerProtocol;
 import br.com.pij.IServer;
 import br.com.pij.ServerProtocol;
 
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.util.ArrayList;
-import java.util.List;
+
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Server implements IServer, Runnable {
@@ -16,6 +15,7 @@ public class Server implements IServer, Runnable {
     private Thread thread;
     private boolean ThreadControl = false;
     private boolean ThreadRunning = false;
+    private ExecutorService pool;
 
     public Server(int port) {
         this.port = port;
@@ -23,31 +23,18 @@ public class Server implements IServer, Runnable {
 
     public void init() {
         this.ThreadControl = true;
-        this.thread = new Thread(this, "Thread.App.Server");
-        this.thread.start();
+        pool = Executors.newFixedThreadPool(5);
+        pool.execute(new Thread(this, "Thread.App.Server"));
     }
 
     public void StopServer() {
         this.ThreadControl = false;
-        // this.thread.interrupt();
-        var thGroup = this.thread.getThreadGroup();
-        Thread [] all = new Thread[thGroup.activeCount()];
-        thGroup.enumerate(all, true);
-        try {
-            this.server.close();
-            for(var th: all){
-                th.join();
-            }
-        } catch (InterruptedException | IOException e) {
-            LogFile.getInstance().log(e);
-        }finally {
-            this.ThreadRunning = false;
-        }
+        pool.shutdownNow();
+        this.thread.interrupt();
     }
 
     @Override
     public void run() {
-        var pool = Executors.newFixedThreadPool(5);
         try {
             this.server = new ServerSocket(this.port);
             LogFile.getInstance().log("Server::ServerSocket on %d", this.port);

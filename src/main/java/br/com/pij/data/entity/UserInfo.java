@@ -12,7 +12,7 @@ import javax.persistence.Table;
 public class UserInfo {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "id")
     private int id;
 
@@ -77,5 +77,17 @@ public class UserInfo {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public String toString() {
+        return "UserInfo{" +
+                "id=" + id +
+                ", age=" + age +
+                ", weight=" + weight +
+                ", height=" + height +
+                ", length=" + length +
+                ", name='" + name + '\'' +
+                '}';
     }
 }
