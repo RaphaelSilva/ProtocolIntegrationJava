@@ -8,11 +8,11 @@ import java.net.ServerSocket;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class Server implements IServer, Runnable {
     private ServerSocket server;
     private int port;
-    private Thread thread;
     private boolean ThreadControl = false;
     private boolean ThreadRunning = false;
     private ExecutorService pool;
@@ -29,14 +29,26 @@ public class Server implements IServer, Runnable {
 
     public void StopServer() {
         this.ThreadControl = false;
+        try {
+            if (this.server != null) {
+                this.server.close();
+            }
+        } catch (IOException e) {
+            LogFile.getInstance().log(e);
+        }
         pool.shutdownNow();
-        this.thread.interrupt();
+        try {
+            pool.awaitTermination(1000, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            LogFile.getInstance().log(e);
+        }
+        this.ThreadRunning = !pool.isTerminated();
     }
 
     @Override
     public void run() {
-        try {
-            this.server = new ServerSocket(this.port);
+        try (var server = new ServerSocket(this.port)) {
+            this.server = server;
             LogFile.getInstance().log("Server::ServerSocket on %d", this.port);
             LogFile.getInstance().log("Server::Server at %s:%s", this.server.getInetAddress(), this.server.getLocalPort());
             LogFile.getInstance().log("Server::%s", this.toString());

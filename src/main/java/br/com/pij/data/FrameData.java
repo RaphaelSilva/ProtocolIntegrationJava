@@ -50,7 +50,7 @@ public abstract class FrameData {
         crc8.reset();
         byte[] bytes_frame_data = MByte.concatAll(new byte[]{(byte) byteLength, (byte) frame}, data);
         crc8.update(bytes_frame_data);
-        System.out.println(crc == crc8.getValue());
+        //System.out.println(crc == crc8.getValue());
         return true;
     }
 
