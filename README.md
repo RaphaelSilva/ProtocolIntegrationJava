@@ -1,5 +1,6 @@
-# ProtocolIntegrationJava
-Projeto desenvolvido com objetivo de testar minhas habilidades de comunicação via socktes usando a linguagem Java.
-Para este projeto eu Usei Hibernet como interface de banco de dados e salvei as Mensagens e Informações de usuários dentro de um banco de dados da H2Databese.
-Utilizei a ferramenta de desenvolvimento da Intellij IDEA como suporte a codificação e controle dos testes unitários.  
+# Socket Protocols
+
+Project developed in order to test my skills via socktes using the Java language.
+For this project I used Hibernet as a database interface and saved the messages and information of users within an H2Databese.
+I used Intellij IDEA's development tool to support unit testing coding and control.
 
